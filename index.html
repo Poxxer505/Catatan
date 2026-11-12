@@ -76,6 +76,8 @@ form #save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-
 .big{font-size:1.6rem}
 }
 .pchips button{border-color:var(--ln);color:var(--ink)}.pchips button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sw{display:flex;gap:0;margin-top:8px}.sw button{flex:1;border-radius:0;padding:6px 10px;font-size:.85rem}.sw button:first-child{border-radius:9px 0 0 9px}.sw button:last-child{border-radius:0 9px 9px 0;border-left:0}.sw button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.chips button.neg{border-color:var(--bad);color:var(--bad)}
+.ch svg{width:100%;height:auto;display:block}.ch .hit{fill:transparent;cursor:pointer}.ctip{min-height:1.5em;font-size:.85rem;color:var(--mt);margin-top:4px}.ch h3{margin:12px 0 4px}.ch h3:first-child{margin-top:0}
 .pnav{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.pnav button:disabled{opacity:.35}
 #eff .cmp{margin-bottom:14px}
 .cf{position:fixed;top:-14px;width:8px;height:12px;z-index:99;pointer-events:none;animation:cf 1.6s ease-in forwards}
@@ -96,6 +98,7 @@ form #save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-
 <div class="card" id="per"></div>
 <section class="card hero" id="hero"></section>
 <div id="eff"></div>
+<div id="charts"></div>
 
 <div class="layout">
 <aside>
@@ -109,10 +112,10 @@ form #save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-
   <label class="full">Bonus insentif (Hub atau lainnya)<span class="money"><input id="bonus" data-money inputmode="numeric" placeholder="0"></span></label>
   <div class="full tipbox">
     <label>Tip hari ini<span class="money"><input id="tip" data-money inputmode="numeric" placeholder="0"></span></label>
-    <div class="chips" style="margin-top:8px"><button type="button" data-tip="2000">+2.000</button><button type="button" data-tip="5000">+5.000</button><button type="button" data-tip="10000">+10.000</button><button type="button" data-tip="20000">+20.000</button><button type="button" data-tip="0">Reset</button></div>
+    <div class="chips" style="margin-top:8px"><button type="button" data-tip="500">+500</button><button type="button" data-tip="2000">+2.000</button><button type="button" data-tip="5000">+5.000</button><button type="button" data-tip="10000">+10.000</button><button type="button" data-tip="20000">+20.000</button><button type="button" data-tip="0">Reset</button></div>
   </div>
-  <div class="full tipbox" style="border-color:var(--hub)"><label>Makan dan minum di jalan<span class="money"><input id="meal" data-money inputmode="numeric" placeholder="0"></span></label><div class="chips mealchips" style="margin-top:8px"><button type="button" data-meal="3000">+3.000</button><button type="button" data-meal="5000">+5.000</button><button type="button" data-meal="10000">+10.000</button><button type="button" data-meal="15000">+15.000</button><button type="button" data-meal="0">Reset</button></div></div>
-  <div class="full tipbox" style="border-color:var(--reg)"><label>Pengeluaran lain (parkir, tambal ban, kuota)<span class="money"><input id="other" data-money inputmode="numeric" placeholder="0"></span></label><div class="chips otherchips" style="margin-top:8px"><button type="button" data-other="2000">+2.000</button><button type="button" data-other="5000">+5.000</button><button type="button" data-other="10000">+10.000</button><button type="button" data-other="0">Reset</button></div></div>
+  <div class="full tipbox" style="border-color:var(--hub)"><label>Makan dan minum di jalan<span class="money"><input id="meal" data-money inputmode="numeric" placeholder="0"></span></label><div class="chips mealchips" style="margin-top:8px"><button type="button" data-meal="500">+500</button><button type="button" data-meal="3000">+3.000</button><button type="button" data-meal="5000">+5.000</button><button type="button" data-meal="10000">+10.000</button><button type="button" data-meal="15000">+15.000</button><button type="button" data-meal="0">Reset</button></div></div>
+  <div class="full tipbox" style="border-color:var(--reg)"><label>Pengeluaran lain (parkir, tambal ban, kuota)<span class="money"><input id="other" data-money inputmode="numeric" placeholder="0"></span></label><div class="chips otherchips" style="margin-top:8px"><button type="button" data-other="500">+500</button><button type="button" data-other="2000">+2.000</button><button type="button" data-other="5000">+5.000</button><button type="button" data-other="10000">+10.000</button><button type="button" data-other="0">Reset</button></div></div>
   <button type="button" class="full" id="avg">Lupa makan dan minum? Pakai rata-rata saya</button>
   <p class="full hint">Pengingat: makan, minum, camilan, parkir, tambal ban, kuota, cuci motor, isi angin. Cek juga riwayat e-wallet, mutasi bank, atau struk hari ini. Isian di formulir tersimpan otomatis, jadi boleh dicicil sepanjang hari.</p>
   <label>Jarak tempuh (km)<input type="number" id="km" min="0" step="0.1" placeholder="85"></label>
@@ -129,7 +132,7 @@ form #save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-
   <div class="card"><h2>Tip</h2><div id="tips"></div></div>
   <div class="card"><h2>Rata-rata bersih per hari dalam seminggu</h2><div class="scroll" id="wk"></div></div>
   <div class="card"><h2>Riwayat</h2><div class="scroll" id="log"></div></div>
-  <div class="tools"><button id="csv">Salin sebagai CSV</button><button id="bak">Salin cadangan</button><button id="res">Pulihkan dari cadangan</button><button id="wipe" class="danger">Hapus semua data</button></div>
+  <div class="tools"><button id="csv">Unduh CSV</button><button id="bak">Salin cadangan</button><button id="res">Pulihkan dari cadangan</button><button id="wipe" class="danger">Hapus semua data</button></div>
   <p class="sub" id="msg" role="status"></p>
 </section>
 </div>
@@ -219,6 +222,7 @@ function render(){
   <div class="stats"><span><b>${pd.length}</b> hari kerja</span><span><b>${O}</b> order</span><span><b>${H.toFixed(1)}</b> jam online</span><span><b>${rp(ti)}</b> pendapatan</span><span><b>${rp(W?W.tip:0)}</b> tip</span></div>`;
   $("eff").innerHTML=pd.length?`<div class="cmp"><div class="card" style="--c:var(--reg)"><h3>Efisiensi</h3>${R("Bersih per jam online",H?rp(N/H):"-")}${R("Bersih per order",O?rp(N/O):"-")}${R("Bersih per km",K?rp(N/K):"-")}${R("Order per jam",H?(O/H).toFixed(1):"-")}</div><div class="card" style="--c:var(--hub)"><h3>Pengeluaran</h3>${R("Bensin",rp(F))}${R("Makan dan minum",rp(M))}${R("Lainnya",rp(X))}${R("Total jarak",K?K.toFixed(1)+" km":"-")}</div></div>`:"";
   const hub=stats(pd.filter(e=>e.scheme==="Hub")),reg=stats(pd.filter(e=>e.scheme==="Reguler"));
+  charts(pd,f,t);
   $("cmp").innerHTML=`<div class="cmp">${card("Hub","var(--hub)",hub)}${card("Reguler","var(--reg)",reg)}</div>`;
   if(hub&&reg){const w=hub.perHour>reg.perHour?"Hub":"Reguler",a=Math.max(hub.perHour,reg.perHour),b=Math.min(hub.perHour,reg.perHour);
     $("verdict").innerHTML=`<div class="verdict"><b>${w}</b> lebih unggul ${b>0?Math.round((a-b)/b*100):0}% per jam online. ${hub.d<3||reg.d<3?"Datanya masih sedikit (kurang dari 3 hari per skema), jadi belum bisa jadi patokan.":"Cek juga tabel per hari agar perbandingannya adil di hari yang sama."}</div>`}
@@ -241,7 +245,9 @@ $("log").addEventListener("click",ev=>{const d=ev.target.dataset;
   if(d.edit)edit(+d.edit);
   if(d.del&&confirm("Hapus catatan ini?")){tomb[d.del]=Date.now();data=data.filter(e=>String(e.id)!==d.del);save();render();say("Catatan dihapus.");toast("Catatan dihapus")}});
 async function copy(t,ok){try{await navigator.clipboard.writeText(t);say(ok)}catch(e){window.prompt("Salin teks ini:",t)}}
-$("csv").onclick=()=>copy(["tanggal,skema,jam_online,order,argo,bonus,tip,makan,lain,km,bensin,bersih",...data.map(e=>[e.date,e.scheme,e.hours,e.orders,e.gross,e.bonus||0,e.tip||0,e.meal||0,e.other||0,e.km,Math.round(fuelOf(e)),Math.round(net(e))].join(","))].join("\n"),"CSV disalin.");
+$("csv").onclick=()=>{const c=x=>String(x).replace(".",","),H="tanggal;skema;jam_online;order;argo;bonus;tip;makan;lain;km;bensin;bersih",
+  rows=[...data].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.scheme,c(e.hours),e.orders,e.gross,e.bonus||0,e.tip||0,e.meal||0,e.other||0,c(e.km||0),Math.round(fuelOf(e)),Math.round(net(e))].join(";"));
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+[H,...rows].join("\r\n")],{type:"text/csv;charset=utf-8"}));a.download="catatan-narik-"+iso(new Date())+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);say("CSV diunduh ("+rows.length+" catatan).");toast("CSV diunduh")};
 $("bak").onclick=()=>copy(JSON.stringify(data),"Cadangan disalin. Simpan di catatan HP atau laptop.");
 $("res").onclick=()=>{const t=prompt("Tempel teks cadangan:");if(!t)return;try{const d=JSON.parse(t);if(!Array.isArray(d))throw 0;d.forEach(x=>x.u=Date.now());const ids=new Set(d.map(x=>x.id));data=[...data.filter(x=>!ids.has(x.id)),...d];save();render();say("Data dipulihkan dan digabung dengan catatan yang sudah ada.")}catch(e){say("Teks cadangan tidak valid.")}};
 $("wipe").onclick=()=>{if(!confirm("Hapus SEMUA catatan? Ini tidak bisa dibatalkan. Salin cadangan dulu kalau masih perlu."))return;data.forEach(e=>tomb[e.id]=Date.now());data=[];save();resetForm();render();say("Semua catatan dihapus.");toast("Semua catatan dihapus")};
@@ -263,6 +269,15 @@ function initG(){if(!window.google||!google.accounts||CLIENT_ID.startsWith("ISI_
 gd.onclick=ask;
 window.bootG=()=>{if(!initG()||tok)return;let was=null;try{was=localStorage.getItem(FK)}catch(e){}fail();if(was)arm()};
 async function api(u,o={}){const r=await fetch(u,{...o,headers:{Authorization:"Bearer "+tok,...(o.headers||{})}});if(r.status===401)throw 401;if(!r.ok)throw r.status;return r}
+const FD="https://www.googleapis.com/drive/v3/files",FLD="catatan-narik-folder";
+async function folderId(){const j=await(await api(FD+"?q="+encodeURIComponent("name='Catatan Narik' and mimeType='application/vnd.google-apps.folder' and trashed=false")+"&fields=files(id)")).json();
+  if(j.files&&j.files[0])return j.files[0].id;
+  return(await(await api(FD+"?fields=id",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:"Catatan Narik",mimeType:"application/vnd.google-apps.folder"})})).json()).id}
+async function tidy(id){try{if(localStorage.getItem(FLD))return}catch(e){}
+  try{const p=((await(await api(FD+"/"+id+"?fields=parents")).json()).parents||[])[0];let inF=false;
+    if(p){try{const m=await(await api(FD+"/"+p+"?fields=mimeType")).json();inF=m.mimeType==="application/vnd.google-apps.folder"}catch(e){if(e===401)throw e}}
+    if(!inF){const f=await folderId();await api(FD+"/"+id+"?addParents="+f+(p?"&removeParents="+p:"")+"&fields=id",{method:"PATCH",headers:{"Content-Type":"application/json"},body:"{}"})}
+    try{localStorage.setItem(FLD,"1")}catch(e){}}catch(e){if(e===401)throw e}}
 async function findId(){if(fid)return fid;
   const j=await(await api("https://www.googleapis.com/drive/v3/files?q="+encodeURIComponent("name='"+FN+"' and trashed=false")+"&fields=files(id)&orderBy=createdTime")).json();
   return fid=j.files&&j.files[0]?j.files[0].id:null}
@@ -272,11 +287,11 @@ function merge(c){const ci=c.items||[],ct=c.tomb||{},t={...tomb};for(const k in 
   const ch=n.length!==ci.length||n.some(e=>cm.get(e.id)!==(e.u||0))||Object.keys(t).some(k=>t[k]!==ct[k]);
   data=n;tomb=t;return ch}
 async function sync(){if(!tok)return;if(busy){again=true;return}busy=true;setSync("Menyinkronkan...");
-  try{const id=await findId();let cloud={};
+  try{const id=await findId();if(id)await tidy(id);let cloud={};
     if(id){try{cloud=await(await api("https://www.googleapis.com/drive/v3/files/"+id+"?alt=media")).json()}catch(e){if(e===401)throw e}}
     const ch=merge(cloud),body=JSON.stringify({items:data,tomb});
     if(id&&ch)await api("https://www.googleapis.com/upload/drive/v3/files/"+id+"?uploadType=media",{method:"PATCH",headers:{"Content-Type":"application/json"},body});
-    else if(!id){const B="cnb",mp="--"+B+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+JSON.stringify({name:FN,mimeType:"application/json"})+"\r\n--"+B+"\r\nContent-Type: application/json\r\n\r\n"+body+"\r\n--"+B+"--";
+    else if(!id){const par=await folderId().catch(()=>null);const B="cnb",mp="--"+B+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+JSON.stringify({name:FN,mimeType:"application/json",...(par?{parents:[par]}:{})})+"\r\n--"+B+"\r\nContent-Type: application/json\r\n\r\n"+body+"\r\n--"+B+"--";
       fid=(await(await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",{method:"POST",headers:{"Content-Type":"multipart/related; boundary="+B},body:mp})).json()).id}
     try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(TK,JSON.stringify(tomb))}catch(e){}
     render();setSync("Tersimpan otomatis di Google Drive. Terakhir "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+".")
@@ -286,6 +301,32 @@ try{const c=JSON.parse(localStorage.getItem(TOK)||"null");if(c&&c.x>Date.now()){
 addEventListener("online",sync);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)sync()});
 setInterval(()=>{if(!document.hidden)sync()},60000);
+["tip","meal","other"].forEach(g=>{const bs=[...document.querySelectorAll("[data-"+g+"]")],box=bs[0].parentElement;let neg=false;
+  const sw=document.createElement("div");sw.className="sw";sw.innerHTML='<button type="button" class="on">Tambah</button><button type="button">Kurang</button>';box.parentNode.insertBefore(sw,box);
+  const lab=()=>bs.forEach(b=>{const a=+b.dataset[g];if(!b.dataset.l)b.dataset.l=b.textContent;b.textContent=a&&neg?"\u2212"+b.dataset.l.slice(1):b.dataset.l;b.classList.toggle("neg",neg&&!!a)});
+  sw.onclick=ev=>{const b=ev.target.closest("button");if(!b)return;neg=b===sw.lastChild;[...sw.children].forEach(x=>x.classList.toggle("on",x===b));lab()};
+  box.addEventListener("click",ev=>{const b=ev.target.closest("[data-"+g+"]");if(!b||!neg||!+b.dataset[g])return;ev.stopPropagation();const v=Math.max(0,num(g)-(+b.dataset[g]));$(g).value=v?fmt(v):"";saveDraft()},true)});
+
+function buckets(pd,f,t){const B=[];
+  if(pm==="year"||pm==="all"){let a,z;if(pm==="year"){a=+f.slice(0,4)*12;z=a+11}else{const d=pd.map(e=>e.date).sort();if(!d.length)return B;a=+d[0].slice(0,4)*12+ +d[0].slice(5,7)-1;z=+d[d.length-1].slice(0,4)*12+ +d[d.length-1].slice(5,7)-1}
+    for(let i=a;i<=z;i++){const y=Math.floor(i/12),m=i%12,k=y+"-"+pad(m+1);B.push({lb:pm==="all"?MON[m]+" "+String(y).slice(2):MON[m],tt:MON[m]+" "+y,l:pd.filter(e=>e.date.startsWith(k))})}}
+  else for(const d=new Date(f+"T00:00"),b=new Date(t+"T00:00");d<=b;d.setDate(d.getDate()+1)){const k=iso(d);B.push({lb:pm==="week"?DAYS[d.getDay()]:String(d.getDate()),tt:dlabel(k),l:pd.filter(e=>e.date===k)})}
+  return B}
+function charts(pd,f,t){const el=$("charts");if(pm==="day"||!pd.length){el.innerHTML="";return}
+  const B=buckets(pd,f,t),n=B.length,W=600,H=170,T=10,Bm=22,ih=H-T-Bm,bw=W/n,st=Math.ceil(n/(pm==="all"?6:9)),
+  V=B.map(b=>{const h=sum(b.l.filter(e=>e.scheme==="Hub"),net),r=sum(b.l,net)-h,hr=sum(b.l,e=>e.hours);return{h:Math.max(0,h),r:Math.max(0,r),tot:sum(b.l,net),hr,has:b.l.length>0}}),
+  mx=Math.max(1,...V.map(v=>v.h+v.r)),lab=(i)=>i%st===0?`<text x="${bw*i+bw/2}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--mt)">${B[i].lb}</text>`:"";
+  let bars="",hits="";V.forEach((v,i)=>{const x=bw*i+bw*.15,w=bw*.7,hh=v.h/mx*ih,rh=v.r/mx*ih,y0=T+ih;
+    bars+=`<rect x="${x}" y="${y0-hh}" width="${w}" height="${hh}" fill="var(--hub)" rx="2"/><rect x="${x}" y="${y0-hh-rh}" width="${w}" height="${rh}" fill="var(--reg)" rx="2"/>`+lab(i);
+    hits+=`<rect class="hit" x="${bw*i}" y="0" width="${bw}" height="${H}" data-c="b" data-t="${B[i].tt}: ${v.has?rp(v.tot):"tidak ada catatan"}"/>`});
+  const P=V.map((v,i)=>v.hr>0?{i,y:v.tot/v.hr,x:bw*i+bw/2}:null),ys=P.filter(Boolean).map(p=>p.y),lo=Math.min(0,...ys,0),hi=Math.max(1,...ys),Y=y=>T+ih-(y-lo)/(hi-lo)*ih;
+  let line="",dots="",lh="",prev=null;P.forEach((p,i)=>{if(p){if(prev)line+=`<line x1="${prev.x}" y1="${Y(prev.y)}" x2="${p.x}" y2="${Y(p.y)}" stroke="var(--reg)" stroke-width="2.5"/>`;dots+=`<circle cx="${p.x}" cy="${Y(p.y)}" r="4" fill="var(--reg)"/>`;prev=p}
+    lh+=`<rect class="hit" x="${bw*i}" y="0" width="${bw}" height="${H}" data-c="l" data-t="${B[i].tt}: ${p?rp(p.y)+" per jam online":"tidak ada catatan"}"/>`;line+=lab(i)});
+  const zl=lo<0?`<line x1="0" x2="${W}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--ln)" stroke-dasharray="4"/>`:"";
+  el.innerHTML=`<div class="card ch"><h3>Bersih per ${pm==="year"||pm==="all"?"bulan":"hari"} <small style="font-weight:400;color:var(--mt)">(<span style="color:var(--hub)">Hub</span> dan <span style="color:var(--reg)">Reguler</span>)</small></h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafik batang bersih">${bars}${hits}</svg><div class="ctip" data-o="b">Ketuk batang untuk melihat angkanya.</div>
+  <h3>Bersih per jam online</h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafik garis bersih per jam online"><line x1="0" x2="${W}" y1="${T+ih}" y2="${T+ih}" stroke="var(--ln)"/>${zl}${line}${dots}${lh}</svg><div class="ctip" data-o="l">Ketuk titik untuk melihat angkanya.</div></div>`}
+$("charts").addEventListener("click",ev=>{const h=ev.target.closest("[data-t]");if(!h)return;const o=$("charts").querySelector('.ctip[data-o="'+h.dataset.c+'"]');if(o)o.textContent=h.dataset.t});
+
 render();
 </script>
 <script src="https://accounts.google.com/gsi/client" async onload="bootG()"></script>
