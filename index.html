@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Catatan Narik</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#e8edf1;--sf:#fff;--sf2:#f3f6f8;--ink:#0d1a23;--mut:#58697340;--mt:#586973;--ln:#d3dce2;--hub:#d97706;--reg:#0d9488;--tip:#7c3aed;--bad:#b91c1c;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1318;--sf:#141f26;--sf2:#1b2931;--ink:#e8f0f3;--mt:#8ea2ac;--ln:#26363f;--hub:#fbbf24;--reg:#2dd4bf;--tip:#a78bfa;--bad:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1318;--sf:#141f26;--sf2:#1b2931;--ink:#e8f0f3;--mt:#8ea2ac;--ln:#26363f;--hub:#fbbf24;--reg:#2dd4bf;--tip:#a78bfa;--bad:#f87171;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 56px}
+h1{font-size:1.6rem;font-weight:800;margin:0}h2{font-size:1.05rem;font-weight:800;margin:0 0 10px}
+.sub{color:var(--mt);margin:2px 0 16px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:16px;margin-bottom:14px}
+.hero{background:var(--ink);color:var(--bg);border:0}
+.hero .sub{color:inherit;opacity:.7;margin:0}
+.hero .num{font-size:2.4rem;font-weight:800;line-height:1.15;margin:4px 0 10px}
+.stats{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:12px;font-size:.88rem}
+.stats b{font-weight:800}
+.seg{display:flex;height:12px;border-radius:99px;overflow:hidden;background:rgba(128,128,128,.3)}
+.seg i{display:block;height:100%}
+.legend{display:flex;gap:14px;font-size:.8rem;margin-top:6px;opacity:.85}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:5px}
+.layout{display:grid;gap:0 18px;grid-template-columns:1fr}
+@media (min-width:900px){.layout{grid-template-columns:360px 1fr;align-items:start}aside{position:sticky;top:12px}}
+form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:flex;flex-direction:column;font-size:.8rem;font-weight:600;color:var(--mt);gap:4px}
+input,select{font:inherit;color:var(--ink);background:var(--sf2);border:1px solid var(--ln);border-radius:9px;padding:10px;width:100%}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--reg);outline-offset:1px}
+.full{grid-column:1/-1}
+.money{position:relative}.money input{padding-left:38px}.money::before{content:"Rp";position:absolute;left:11px;bottom:11px;color:var(--mt);font-size:.85rem}
+button{font:inherit;font-weight:600;cursor:pointer;border-radius:9px;border:1px solid var(--ln);background:var(--sf2);color:var(--ink);padding:9px 14px}
+button.pri{background:var(--reg);border-color:var(--reg);color:#04201d;font-weight:800;padding:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips button{padding:6px 11px;border-color:var(--tip);color:var(--tip);background:transparent}
+.mealchips button{border-color:var(--hub);color:var(--hub)}
+.tipbox{border:1px dashed var(--tip);border-radius:11px;padding:10px;background:var(--sf2)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cmp .card{border-top:5px solid var(--c);margin:0}
+.cmp h3{margin:0 0 4px;color:var(--c);font-size:1rem}
+.big{font-size:1.8rem;font-weight:800;line-height:1.1}.big small{font-size:.85rem;font-weight:600;color:var(--mt)}
+.row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--ln);font-size:.88rem}.row:last-child{border:0}.row span:first-child{color:var(--mt)}
+.verdict{margin:12px 0 14px;padding:12px 14px;border-radius:12px;background:var(--sf);border:1px solid var(--ln);border-left:5px solid var(--ink)}
+.bar{display:grid;grid-template-columns:64px 1fr 84px;gap:8px;align-items:center;font-size:.82rem;margin:6px 0}
+.track{display:flex;height:16px;border-radius:6px;overflow:hidden;background:var(--sf2)}.track i{display:block}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:760px}
+th,td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--ln);white-space:nowrap}th:first-child,td:first-child{text-align:left}th{color:var(--mt);font-weight:600}
+.tag{font-weight:800}.tag.Hub{color:var(--hub)}.tag.Reguler{color:var(--reg)}
+td button{padding:2px 8px;font-size:.8rem}.del{color:var(--bad)}
+.hint{font-size:.8rem;color:var(--mt);margin:0}
+.otherchips button{border-color:var(--reg);color:var(--reg)}
+.empty{color:var(--mt);padding:8px 0}.tools{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:520px){.cmp{grid-template-columns:1fr}.hero .num{font-size:2rem}}
+
+input,select{font-size:16px;min-height:46px}
+button{min-height:44px}
+.chips button{min-height:42px;padding:8px 14px}
+td button{min-height:0}
+button.pri{min-height:52px;font-size:1rem}
+.logs{display:grid;gap:10px}
+.entry{border:1px solid var(--ln);border-radius:12px;padding:12px;background:var(--sf2)}
+.eh{display:flex;align-items:baseline;gap:10px}.eh .en{margin-left:auto;font-weight:800;font-size:1.05rem}
+.ed{display:flex;flex-wrap:wrap;gap:2px 14px;margin:6px 0 10px;font-size:.86rem;color:var(--mt)}
+.ea{display:flex;gap:8px}.ea button{flex:1}
+.danger{color:var(--bad);border-color:var(--bad);background:transparent}
+.tools button{flex:1 1 140px}
+@media (min-width:900px){.logs{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){
+.wrap{padding:12px 12px 40px}h1{font-size:1.35rem}.sub{font-size:.88rem}
+.card{padding:14px;border-radius:12px}
+.hero .num{font-size:1.9rem}
+.stats{gap:4px 16px;font-size:.84rem}
+form{gap:12px 10px}
+form #save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 6px 20px rgba(0,0,0,.28)}
+.big{font-size:1.6rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Catatan Narik</h1>
+<p class="sub">Catat tiap hari kerja, lalu lihat skema mana yang paling menguntungkan per jam online.</p>
+<p class="hint" id="sync" role="status" style="margin:-10px 0 14px"></p>
+<button id="gd" hidden style="margin:-6px 0 14px">Hubungkan Google Drive</button>
+
+<section class="card hero" id="hero"></section>
+
+<div class="layout">
+<aside>
+<form id="f" class="card">
+  <h2 class="full" id="ftitle">Catatan hari ini</h2>
+  <label>Tanggal<input type="date" id="date" required></label>
+  <label>Skema<select id="scheme"><option>Hub</option><option>Reguler</option></select></label>
+  <label>Jam online<input type="number" id="hours" step="0.25" min="0.25" placeholder="9.25" required></label>
+  <label>Jumlah order<input type="number" id="orders" min="0" placeholder="14" required></label>
+  <label class="full">Biaya pengantaran (argo)<span class="money"><input id="gross" data-money inputmode="numeric" placeholder="150.000" required></span></label>
+  <label class="full">Bonus insentif (Hub atau lainnya)<span class="money"><input id="bonus" data-money inputmode="numeric" placeholder="0"></span></label>
+  <div class="full tipbox">
+    <label>Tip hari ini<span class="money"><input id="tip" data-money inputmode="numeric" placeholder="0"></span></label>
+    <div class="chips" style="margin-top:8px"><button type="button" data-tip="2000">+2.000</button><button type="button" data-tip="5000">+5.000</button><button type="button" data-tip="10000">+10.000</button><button type="button" data-tip="20000">+20.000</button><button type="button" data-tip="0">Reset</button></div>
+  </div>
+  <div class="full tipbox" style="border-color:var(--hub)"><label>Makan dan minum di jalan<span class="money"><input id="meal" data-money inputmode="numeric" placeholder="0"></span></label><div class="chips mealchips" style="margin-top:8px"><button type="button" data-meal="3000">+3.000</button><button type="button" data-meal="5000">+5.000</button><button type="button" data-meal="10000">+10.000</button><button type="button" data-meal="15000">+15.000</button><button type="button" data-meal="0">Reset</button></div></div>
+  <div class="full tipbox" style="border-color:var(--reg)"><label>Pengeluaran lain (parkir, tambal ban, kuota)<span class="money"><input id="other" data-money inputmode="numeric" placeholder="0"></span></label><div class="chips otherchips" style="margin-top:8px"><button type="button" data-other="2000">+2.000</button><button type="button" data-other="5000">+5.000</button><button type="button" data-other="10000">+10.000</button><button type="button" data-other="0">Reset</button></div></div>
+  <button type="button" class="full" id="avg">Lupa makan dan minum? Pakai rata-rata saya</button>
+  <p class="full hint">Pengingat: makan, minum, camilan, parkir, tambal ban, kuota, cuci motor, isi angin. Cek juga riwayat e-wallet, mutasi bank, atau struk hari ini. Isian di formulir tersimpan otomatis, jadi boleh dicicil sepanjang hari.</p>
+  <label>Jarak tempuh (km)<input type="number" id="km" min="0" step="0.1" placeholder="85"></label>
+  <label>Bensin per km<span class="money"><input id="rpkm" data-money inputmode="numeric" value="170"></span></label>
+  <label class="full">Bensin terpakai (kosongkan jika tidak tahu)<span class="money"><input id="fuel" data-money inputmode="numeric" placeholder="otomatis dari km"></span></label>
+  <button class="pri full" type="submit" id="save">Simpan catatan</button>
+  <button class="full" type="button" id="cancel" hidden>Batalkan perubahan</button>
+</form>
+</aside>
+
+<section>
+  <div id="cmp"></div>
+  <div id="verdict"></div>
+  <div class="card"><h2>Tip</h2><div id="tips"></div></div>
+  <div class="card"><h2>Rata-rata bersih per hari dalam seminggu</h2><div class="scroll" id="wk"></div></div>
+  <div class="card"><h2>Riwayat</h2><div class="scroll" id="log"></div></div>
+  <div class="tools"><button id="csv">Salin sebagai CSV</button><button id="bak">Salin cadangan</button><button id="res">Pulihkan dari cadangan</button><button id="wipe" class="danger">Hapus semua data</button></div>
+  <p class="sub" id="msg" role="status"></p>
+</section>
+</div>
+</div>
+
+<script>
+const KEY="catatan-narik-v1",RP="catatan-narik-rpkm",DK="catatan-narik-draft";
+const $=id=>document.getElementById(id);
+const rp=n=>"Rp"+Math.round(n).toLocaleString("id-ID");
+const DAYS=["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
+const pad=n=>String(n).padStart(2,"0");
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const dow=s=>new Date(s+"T00:00").getDay();
+const dlabel=s=>DAYS[dow(s)]+", "+s.slice(5).split("-").reverse().join("/");
+let data=[];try{data=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){}
+let editing=null,col=null,uid=null,firstSnap=true,dT=null,dP=false,lastT=0,seenD=false;
+const say=t=>{$("msg").textContent=t};
+const TK="catatan-narik-tomb";let tomb={};try{tomb=JSON.parse(localStorage.getItem(TK)||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(TK,JSON.stringify(tomb))}catch(e){say("Penyimpanan browser tidak tersedia. Salin cadangan agar data tidak hilang.")}sync()};
+const num=id=>+($(id).value.replace(/\D/g,""))||0;
+const fmt=n=>n?(+n).toLocaleString("id-ID"):"";
+try{const r=localStorage.getItem(RP);if(r)$("rpkm").value=fmt(r)}catch(e){}
+document.querySelectorAll("[data-money]").forEach(i=>i.addEventListener("input",()=>{i.value=fmt(i.value.replace(/\D/g,""))}));
+$("rpkm").value=fmt(num("rpkm"));
+$("date").value=iso(new Date());
+document.querySelectorAll("[data-tip]").forEach(b=>b.onclick=()=>{const a=+b.dataset.tip;$("tip").value=a?fmt(num("tip")+a):""});
+document.querySelectorAll("[data-meal]").forEach(b=>b.onclick=()=>{const a=+b.dataset.meal;$("meal").value=a?fmt(num("meal")+a):""});
+document.querySelectorAll("[data-other]").forEach(b=>b.onclick=()=>{const a=+b.dataset.other;$("other").value=a?fmt(num("other")+a):""});
+const FIELDS=["date","scheme","hours","orders","gross","bonus","tip","meal","other","km","rpkm","fuel"];
+function saveDraft(){if(editing)return;lastT=Date.now();try{const d={};FIELDS.forEach(i=>d[i]=$(i).value);d._t=lastT;localStorage.setItem(DK,JSON.stringify(d))}catch(e){}}
+function applyDraft(d){FIELDS.forEach(i=>{if(d[i]!=null&&d[i]!=="")$(i).value=d[i]});lastT=d._t||lastT}
+try{const d=JSON.parse(localStorage.getItem(DK)||"null");if(d){applyDraft(d);say("Isian yang belum disimpan dipulihkan.")}}catch(e){}
+$("f").addEventListener("input",saveDraft);
+$("f").addEventListener("click",ev=>{if(ev.target.matches("[data-tip],[data-meal],[data-other]"))saveDraft()});
+$("avg").onclick=()=>{const s=$("scheme").value;let l=data.filter(e=>e.scheme===s&&e.meal>0);if(!l.length)l=data.filter(e=>e.meal>0);if(!l.length){say("Belum ada data makan dan minum untuk dijadikan rata-rata.");return}const a=Math.round(sum(l,e=>e.meal)/l.length/1000)*1000;$("meal").value=fmt(a);saveDraft();say("Diisi perkiraan "+rp(a)+" dari rata-rata "+l.length+" hari. Ubah kalau berbeda.")};
+
+const fuelOf=e=>e.fuel!=null?e.fuel:(e.km||0)*(e.rpkm||0);
+const net=e=>e.gross+(e.tip||0)+(e.bonus||0)-fuelOf(e)-(e.meal||0)-(e.other||0);
+const sum=(l,k)=>l.reduce((a,e)=>a+k(e),0);
+function stats(l){const d=l.length;if(!d)return null;const n=sum(l,net),h=sum(l,e=>e.hours),o=sum(l,e=>e.orders);
+  return{d,net:n,perDay:n/d,perHour:n/h,perOrder:n/(o||1),orders:o/d,hours:h/d,gross:sum(l,e=>e.gross)/d,tip:sum(l,e=>e.tip||0),meal:sum(l,e=>e.meal||0),other:sum(l,e=>e.other||0)}}
+
+$("f").addEventListener("submit",ev=>{
+  ev.preventDefault();
+  const fv=$("fuel").value.trim();
+  const e={id:editing||Date.now(),u:Date.now(),date:$("date").value,scheme:$("scheme").value,hours:+$("hours").value,orders:+$("orders").value,gross:num("gross"),tip:num("tip"),meal:num("meal"),other:num("other"),bonus:num("bonus"),km:+$("km").value||0,rpkm:num("rpkm"),fuel:fv===""?null:num("fuel")};
+  data=editing?data.map(x=>x.id===editing?e:x):[...data,e];
+  try{localStorage.setItem(RP,e.rpkm)}catch(x){}
+  save();resetForm();render();say(editing?"Perubahan disimpan.":"Catatan tersimpan.");editing=null;
+});
+function resetForm(){try{localStorage.removeItem(DK)}catch(e){}["hours","orders","gross","bonus","tip","meal","other","km","fuel"].forEach(i=>$(i).value="");$("date").value=iso(new Date());editing=null;$("ftitle").textContent="Catatan hari ini";$("save").textContent="Simpan catatan";$("cancel").hidden=true}
+$("cancel").onclick=()=>{resetForm();say("")};
+function edit(id){const e=data.find(x=>x.id===id);if(!e)return;editing=id;
+  $("date").value=e.date;$("scheme").value=e.scheme;$("hours").value=e.hours;$("orders").value=e.orders;$("gross").value=fmt(e.gross);$("tip").value=fmt(e.tip);$("meal").value=fmt(e.meal);$("other").value=fmt(e.other);$("bonus").value=fmt(e.bonus);$("km").value=e.km||"";$("rpkm").value=fmt(e.rpkm);$("fuel").value=e.fuel==null?"":fmt(e.fuel);
+  $("ftitle").textContent="Ubah catatan";$("save").textContent="Simpan perubahan";$("cancel").hidden=false;$("f").scrollIntoView({behavior:"smooth"})}
+
+function card(name,c,s){
+  if(!s)return `<div class="card" style="--c:${c}"><h3>${name}</h3><div class="empty">Belum ada catatan.</div></div>`;
+  return `<div class="card" style="--c:${c}"><h3>${name} (${s.d} hari)</h3><div class="big">${rp(s.perHour)} <small>per jam online</small></div>
+  <div class="row"><span>Bersih per hari</span><span>${rp(s.perDay)}</span></div>
+  <div class="row"><span>Kotor per hari</span><span>${rp(s.gross)}</span></div>
+  <div class="row"><span>Order per hari</span><span>${s.orders.toFixed(1)}</span></div>
+  <div class="row"><span>Jam online per hari</span><span>${s.hours.toFixed(1)}</span></div>
+  <div class="row"><span>Bersih per order</span><span>${rp(s.perOrder)}</span></div></div>`}
+
+function render(){
+  const t=new Date(),m=new Date(t);m.setDate(t.getDate()-(t.getDay()+6)%7);const s=new Date(m);s.setDate(m.getDate()+6);
+  const wk=data.filter(e=>e.date>=iso(m)&&e.date<=iso(s)),W=stats(wk);
+  const wh=sum(wk.filter(e=>e.scheme==="Hub"),net),wr=sum(wk.filter(e=>e.scheme==="Reguler"),net),wt=Math.max(wh+wr,1);
+  $("hero").innerHTML=`<div class="sub">Minggu ini (${iso(m).slice(5).split("-").reverse().join("/")} sampai ${iso(s).slice(5).split("-").reverse().join("/")}), bersih setelah bensin dan pengeluaran</div>
+  <div class="num">${rp(W?W.net:0)}</div>
+  <div class="seg"><i style="width:${wh/wt*100}%;background:var(--hub)"></i><i style="width:${wr/wt*100}%;background:var(--reg)"></i></div>
+  <div class="legend"><span style="--c:var(--hub)">Hub ${rp(wh)}</span><span style="--c:var(--reg)">Reguler ${rp(wr)}</span></div>
+  <div class="stats"><span><b>${W?W.d:0}</b> hari kerja</span><span><b>${wk.reduce((a,e)=>a+e.orders,0)}</b> order</span><span><b>${sum(wk,e=>e.hours).toFixed(1)}</b> jam online</span><span><b>${rp(W?W.tip:0)}</b> tip</span><span><b>${rp(W?W.meal+W.other:0)}</b> makan dan lainnya</span></div>`;
+
+  const hub=stats(data.filter(e=>e.scheme==="Hub")),reg=stats(data.filter(e=>e.scheme==="Reguler"));
+  $("cmp").innerHTML=`<div class="cmp">${card("Hub","var(--hub)",hub)}${card("Reguler","var(--reg)",reg)}</div>`;
+  if(hub&&reg){const w=hub.perHour>reg.perHour?"Hub":"Reguler",a=Math.max(hub.perHour,reg.perHour),b=Math.min(hub.perHour,reg.perHour);
+    $("verdict").innerHTML=`<div class="verdict"><b>${w}</b> lebih unggul ${b>0?Math.round((a-b)/b*100):0}% per jam online. ${hub.d<3||reg.d<3?"Datanya masih sedikit (kurang dari 3 hari per skema), jadi belum bisa jadi patokan.":"Cek juga tabel per hari agar perbandingannya adil di hari yang sama."}</div>`}
+  else $("verdict").innerHTML=`<div class="verdict">Catat minimal 3 hari untuk tiap skema agar perbandingannya berarti.</div>`;
+
+  const tt=sum(data,e=>e.tip||0),inc=sum(data,e=>e.gross+(e.tip||0)),td=data.filter(e=>e.tip>0);
+  const rec=[...data].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,7).reverse(),mx=Math.max(1,...rec.map(e=>e.gross+(e.tip||0)));
+  $("tips").innerHTML=data.length?`<div class="stats" style="margin:0 0 8px"><span>Total tip <b style="color:var(--tip)">${rp(tt)}</b></span><span><b>${inc?(tt/inc*100).toFixed(1):0}%</b> dari pendapatan</span><span>Rata-rata <b>${rp(td.length?tt/td.length:0)}</b> per hari bertip</span><span><b>${td.length}</b> dari ${data.length} hari dapat tip</span></div>`+
+    rec.map(e=>`<div class="bar"><span>${dlabel(e.date)}</span><div class="track"><i style="width:${e.gross/mx*100}%;background:var(--${e.scheme==="Hub"?"hub":"reg"})"></i><i style="width:${(e.tip||0)/mx*100}%;background:var(--tip)"></i></div><span style="text-align:right;color:var(--tip)">${e.tip?"+"+rp(e.tip):"-"}</span></div>`).join(""):`<div class="empty">Belum ada data tip. Isi kolom tip atau tekan tombol +2.000, +5.000, dan seterusnya setiap kali dapat tip.</div>`;
+
+  let rows="";for(const i of [1,2,3,4,5,6,0]){const c=k=>{const l=data.filter(e=>e.scheme===k&&dow(e.date)===i);return l.length?rp(stats(l).perDay)+` <small>(${l.length}x)</small>`:"-"};rows+=`<tr><td>${DAYS[i]}</td><td>${c("Hub")}</td><td>${c("Reguler")}</td></tr>`}
+  $("wk").innerHTML=`<table style="min-width:360px"><tr><th>Hari</th><th>Hub</th><th>Reguler</th></tr>${rows}</table>`;
+
+  const l=[...data].sort((a,b)=>b.date.localeCompare(a.date));
+  $("log").innerHTML=l.length?`<div class="logs">${l.map(e=>{const o=(e.meal||0)+(e.other||0);return `<div class="entry"><div class="eh"><b>${dlabel(e.date)}</b><span class="tag ${e.scheme}">${e.scheme}</span><span class="en">${rp(net(e))}</span></div><div class="ed"><span>${e.hours} jam</span><span>${e.orders} order</span><span>Argo ${rp(e.gross)}</span>${e.bonus?`<span>Bonus ${rp(e.bonus)}</span>`:""}${e.tip?`<span>Tip ${rp(e.tip)}</span>`:""}${o?`<span>Makan dan lain ${rp(o)}</span>`:""}</div><div class="ea"><button data-edit="${e.id}">Ubah</button><button class="del" data-del="${e.id}">Hapus</button></div></div>`}).join("")}</div>`:`<div class="empty">Belum ada catatan. Isi formulir untuk mulai.</div>`;
+}
+$("log").addEventListener("click",ev=>{const d=ev.target.dataset;
+  if(d.edit)edit(+d.edit);
+  if(d.del&&confirm("Hapus catatan ini?")){tomb[d.del]=Date.now();data=data.filter(e=>String(e.id)!==d.del);save();render();say("Catatan dihapus.")}});
+async function copy(t,ok){try{await navigator.clipboard.writeText(t);say(ok)}catch(e){window.prompt("Salin teks ini:",t)}}
+$("csv").onclick=()=>copy(["tanggal,skema,jam_online,order,argo,bonus,tip,makan,lain,km,bensin,bersih",...data.map(e=>[e.date,e.scheme,e.hours,e.orders,e.gross,e.bonus||0,e.tip||0,e.meal||0,e.other||0,e.km,Math.round(fuelOf(e)),Math.round(net(e))].join(","))].join("\n"),"CSV disalin.");
+$("bak").onclick=()=>copy(JSON.stringify(data),"Cadangan disalin. Simpan di catatan HP atau laptop.");
+$("res").onclick=()=>{const t=prompt("Tempel teks cadangan:");if(!t)return;try{const d=JSON.parse(t);if(!Array.isArray(d))throw 0;d.forEach(x=>x.u=Date.now());const ids=new Set(d.map(x=>x.id));data=[...data.filter(x=>!ids.has(x.id)),...d];save();render();say("Data dipulihkan dan digabung dengan catatan yang sudah ada.")}catch(e){say("Teks cadangan tidak valid.")}};
+$("wipe").onclick=()=>{if(!confirm("Hapus SEMUA catatan? Ini tidak bisa dibatalkan. Salin cadangan dulu kalau masih perlu."))return;data.forEach(e=>tomb[e.id]=Date.now());data=[];save();resetForm();render();say("Semua catatan dihapus.")};
+const CLIENT_ID="798444939429-u25qurjvumadi8kfr23td8pan5dcsagb.apps.googleusercontent.com",FN="catatan-narik.json",FK="catatan-narik-gd";
+const setSync=t=>{$("sync").textContent=t},gd=$("gd"),LOCAL="Belum tersambung ke Google Drive. Data aman di perangkat ini.";
+let tok=null,tc=null,fid=null,busy=false,again=false;
+setSync("Tersimpan di perangkat ini saja.");
+if(CLIENT_ID.startsWith("ISI_"))setSync("Tersimpan di perangkat ini saja. Isi CLIENT_ID di kode untuk memakai Google Drive.");
+function fail(){tok=null;gd.hidden=false;setSync(LOCAL)}
+function initG(){if(!window.google||!google.accounts||CLIENT_ID.startsWith("ISI_"))return false;
+  tc=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:"https://www.googleapis.com/auth/drive.file",
+    callback:r=>{if(r.access_token){tok=r.access_token;try{localStorage.setItem(FK,"1")}catch(e){}gd.hidden=true;sync()}else fail()},
+    error_callback:fail});return true}
+gd.onclick=()=>tc&&tc.requestAccessToken({prompt:"select_account"});
+window.bootG=()=>{if(!initG())return;let was=null;try{was=localStorage.getItem(FK)}catch(e){}
+  if(was)tc.requestAccessToken({prompt:""});else{gd.hidden=false;setSync(LOCAL)}};
+async function api(u,o={}){const r=await fetch(u,{...o,headers:{Authorization:"Bearer "+tok,...(o.headers||{})}});if(r.status===401)throw 401;if(!r.ok)throw r.status;return r}
+async function findId(){if(fid)return fid;
+  const j=await(await api("https://www.googleapis.com/drive/v3/files?q="+encodeURIComponent("name='"+FN+"' and trashed=false")+"&fields=files(id)&orderBy=createdTime")).json();
+  return fid=j.files&&j.files[0]?j.files[0].id:null}
+function merge(c){const ci=c.items||[],ct=c.tomb||{},t={...tomb};for(const k in ct)t[k]=Math.max(t[k]||0,ct[k]);
+  const m=new Map();[...data,...ci].forEach(e=>{const o=m.get(e.id);if(!o||(e.u||0)>(o.u||0))m.set(e.id,e)});
+  const n=[...m.values()].filter(e=>!(t[e.id]!==undefined&&(e.u||0)<=t[e.id])),cm=new Map(ci.map(e=>[e.id,e.u||0]));
+  const ch=n.length!==ci.length||n.some(e=>cm.get(e.id)!==(e.u||0))||Object.keys(t).some(k=>t[k]!==ct[k]);
+  data=n;tomb=t;return ch}
+async function sync(){if(!tok)return;if(busy){again=true;return}busy=true;setSync("Menyinkronkan...");
+  try{const id=await findId();let cloud={};
+    if(id){try{cloud=await(await api("https://www.googleapis.com/drive/v3/files/"+id+"?alt=media")).json()}catch(e){if(e===401)throw e}}
+    const ch=merge(cloud),body=JSON.stringify({items:data,tomb});
+    if(id&&ch)await api("https://www.googleapis.com/upload/drive/v3/files/"+id+"?uploadType=media",{method:"PATCH",headers:{"Content-Type":"application/json"},body});
+    else if(!id){const B="cnb",mp="--"+B+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+JSON.stringify({name:FN,mimeType:"application/json"})+"\r\n--"+B+"\r\nContent-Type: application/json\r\n\r\n"+body+"\r\n--"+B+"--";
+      fid=(await(await api("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",{method:"POST",headers:{"Content-Type":"multipart/related; boundary="+B},body:mp})).json()).id}
+    try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(TK,JSON.stringify(tomb))}catch(e){}
+    render();setSync("Tersimpan otomatis di Google Drive. Terakhir "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+".")
+  }catch(e){if(e===401){fid=null;fail();try{tc.requestAccessToken({prompt:""})}catch(x){}}else{if(e===404)fid=null;setSync("Gagal sinkron ke Drive (kode "+e+"). Data aman di perangkat ini, dicoba lagi nanti.")}}
+  finally{busy=false;if(again){again=false;sync()}}}
+addEventListener("online",sync);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)sync()});
+setInterval(()=>{if(!document.hidden)sync()},60000);
+render();
+</script>
+<script src="https://accounts.google.com/gsi/client" async onload="bootG()"></script>
+</body>
+</html>
