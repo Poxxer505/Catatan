@@ -159,7 +159,7 @@ const fuelOf=e=>e.fuel!=null?e.fuel:(e.km||0)*(e.rpkm||0);
 const net=e=>e.gross+(e.tip||0)+(e.bonus||0)-fuelOf(e)-(e.meal||0)-(e.other||0);
 const sum=(l,k)=>l.reduce((a,e)=>a+k(e),0);
 function stats(l){const d=l.length;if(!d)return null;const n=sum(l,net),h=sum(l,e=>e.hours),o=sum(l,e=>e.orders);
-  return{d,net:n,perDay:n/d,perHour:n/h,perOrder:n/(o||1),orders:o/d,hours:h/d,gross:sum(l,e=>e.gross)/d,tip:sum(l,e=>e.tip||0),meal:sum(l,e=>e.meal||0),other:sum(l,e=>e.other||0)}}
+  return{d,net:n,perDay:n/d,perHour:n/h,perOrder:n/(o||1),orders:o/d,hours:h/d,gross:sum(l,e=>e.gross)/d,km:sum(l,e=>e.km||0)/d,fuel:sum(l,fuelOf)/d,tip:sum(l,e=>e.tip||0),meal:sum(l,e=>e.meal||0),other:sum(l,e=>e.other||0)}}
 
 $("f").addEventListener("submit",ev=>{
   ev.preventDefault();
@@ -182,6 +182,8 @@ function card(name,c,s){
   <div class="row"><span>Kotor per hari</span><span>${rp(s.gross)}</span></div>
   <div class="row"><span>Order per hari</span><span>${s.orders.toFixed(1)}</span></div>
   <div class="row"><span>Jam online per hari</span><span>${s.hours.toFixed(1)}</span></div>
+  <div class="row"><span>Jarak per hari</span><span>${s.km.toFixed(1)} km</span></div>
+  <div class="row"><span>Bensin per hari</span><span>${rp(s.fuel)}</span></div>
   <div class="row"><span>Bersih per order</span><span>${rp(s.perOrder)}</span></div></div>`}
 
 function render(){
