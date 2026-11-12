@@ -95,6 +95,7 @@ form #save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-
 <p class="sub">Catat tiap hari kerja, lalu lihat skema mana yang paling menguntungkan per jam online.</p>
 <p class="hint" id="sync" role="status" style="margin:-10px 0 14px"></p>
 <button id="gd" hidden style="margin:-6px 0 14px">Hubungkan Google Drive</button>
+<button id="gout" hidden style="margin:-6px 0 14px">Keluar dari akun Google</button>
 
 <div class="card" id="per"></div>
 <section class="card hero" id="hero"></section>
@@ -267,13 +268,14 @@ let armed=false;
 const hint=()=>{try{return localStorage.getItem(HK)||""}catch(e){return ""}};
 function ask(){if(!tc)return;const h=hint();tc.requestAccessToken(h?{prompt:"",hint:h}:{prompt:"select_account"})}
 function arm(){if(armed)return;armed=true;document.addEventListener("click",ev=>{armed=false;if(!tok&&ev.target!==gd)ask()},{once:true})}
-function fail(){tok=null;try{localStorage.removeItem(TOK)}catch(e){}gd.hidden=false;gd.textContent=hint()?"Lanjutkan ke Google Drive":"Hubungkan Google Drive";setSync(LOCAL)}
+function fail(){tok=null;try{localStorage.removeItem(TOK)}catch(e){}gd.hidden=false;$("gout").hidden=true;gd.textContent=hint()?"Lanjutkan ke Google Drive":"Hubungkan Google Drive";setSync(LOCAL)}
 function initG(){if(!window.google||!google.accounts||CLIENT_ID.startsWith("ISI_"))return false;
   tc=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:"https://www.googleapis.com/auth/drive.file",
-    callback:r=>{if(r.access_token){tok=r.access_token;try{localStorage.setItem(FK,"1");localStorage.setItem(TOK,JSON.stringify({t:tok,x:Date.now()+((r.expires_in||3600)-120)*1000}))}catch(e){}gd.hidden=true;
+    callback:r=>{if(r.access_token){tok=r.access_token;try{localStorage.setItem(FK,"1");localStorage.setItem(TOK,JSON.stringify({t:tok,x:Date.now()+((r.expires_in||3600)-120)*1000}))}catch(e){}gd.hidden=true;$("gout").hidden=false;
       if(!hint())api("https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)").then(x=>x.json()).then(j=>{if(j.user&&j.user.emailAddress)localStorage.setItem(HK,j.user.emailAddress)}).catch(()=>{});sync()}else fail()},
     error_callback:fail});return true}
 gd.onclick=ask;
+$("gout").onclick=()=>{if(!confirm("Keluar dari akun Google? Data di perangkat ini tetap tersimpan."))return;const t=tok;tok=null;fid=null;again=false;armed=false;try{if(t&&window.google&&google.accounts&&google.accounts.oauth2)google.accounts.oauth2.revoke(t,()=>{})}catch(e){}try{localStorage.removeItem(TOK);localStorage.removeItem(FK);localStorage.removeItem(HK);localStorage.removeItem(FLD)}catch(e){}gd.hidden=false;gd.textContent="Hubungkan Google Drive";$("gout").hidden=true;setSync(LOCAL);toast("Sudah keluar dari Google")};
 window.bootG=()=>{if(!initG()||tok)return;let was=null;try{was=localStorage.getItem(FK)}catch(e){}fail();if(was)arm()};
 async function api(u,o={}){const r=await fetch(u,{...o,headers:{Authorization:"Bearer "+tok,...(o.headers||{})}});if(r.status===401)throw 401;if(!r.ok)throw r.status;return r}
 const FD="https://www.googleapis.com/drive/v3/files",FLD="catatan-narik-folder";
@@ -304,7 +306,7 @@ async function sync(){if(!tok)return;if(busy){again=true;return}busy=true;setSyn
     render();setSync("Tersimpan otomatis di Google Drive. Terakhir "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})+".")
   }catch(e){if(e===401){fid=null;fail();arm()}else{if(e===404)fid=null;setSync("Gagal sinkron ke Drive (kode "+e+"). Data aman di perangkat ini, dicoba lagi nanti.")}}
   finally{busy=false;if(again){again=false;sync()}}}
-try{const c=JSON.parse(localStorage.getItem(TOK)||"null");if(c&&c.x>Date.now()){tok=c.t;gd.hidden=true;sync()}}catch(e){}
+try{const c=JSON.parse(localStorage.getItem(TOK)||"null");if(c&&c.x>Date.now()){tok=c.t;gd.hidden=true;$("gout").hidden=false;sync()}}catch(e){}
 addEventListener("online",sync);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)sync()});
 setInterval(()=>{if(!document.hidden)sync()},60000);
