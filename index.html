@@ -229,7 +229,8 @@ function render(){
   $("eff").innerHTML=pd.length?`<div class="cmp"><div class="card" style="--c:var(--reg)"><h3>Efisiensi</h3>${R("Bersih per jam online",H?rp(N/H):"-")}${R("Bersih per order",O?rp(N/O):"-")}${R("Bersih per km",K?rp(N/K):"-")}${R("Order per jam",H?(O/H).toFixed(1):"-")}</div><div class="card" style="--c:var(--hub)"><h3>Pengeluaran</h3>${R("Bensin",rp(F))}${R("Makan dan minum",rp(M))}${R("Lainnya",rp(X))}${R("Total jarak",K?K.toFixed(1)+" km":"-")}</div></div>`:"";
   const hub=stats(pd.filter(e=>e.scheme==="Hub")),reg=stats(pd.filter(e=>e.scheme==="Reguler"));
   $("cmp").innerHTML=`<div class="cmp">${card("Hub","var(--hub)",hub)}${card("Reguler","var(--reg)",reg)}</div>`;
-  if(hub&&reg){const w=hub.perHour>reg.perHour?"Hub":"Reguler",a=Math.max(hub.perHour,reg.perHour),b=Math.min(hub.perHour,reg.perHour);
+  if(pm==="day")$("verdict").innerHTML="";
+  else if(hub&&reg){const w=hub.perHour>reg.perHour?"Hub":"Reguler",a=Math.max(hub.perHour,reg.perHour),b=Math.min(hub.perHour,reg.perHour);
     $("verdict").innerHTML=`<div class="verdict"><b>${w}</b> lebih unggul ${b>0?Math.round((a-b)/b*100):0}% per jam online. ${hub.d<3||reg.d<3?"Datanya masih sedikit (kurang dari 3 hari per skema), jadi belum bisa jadi patokan.":"Cek juga tabel per hari agar perbandingannya adil di hari yang sama."}</div>`}
   else $("verdict").innerHTML=`<div class="verdict">Catat minimal 3 hari untuk tiap skema agar perbandingannya berarti.</div>`;
 
