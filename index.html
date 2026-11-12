@@ -31,6 +31,7 @@ label{display:flex;flex-direction:column;font-size:.8rem;font-weight:600;color:v
 input,select{font:inherit;color:var(--ink);background:var(--sf2);border:1px solid var(--ln);border-radius:9px;padding:10px;width:100%}
 input:focus,select:focus,button:focus-visible{outline:2px solid var(--reg);outline-offset:1px}
 .full{grid-column:1/-1}
+.dwrap{position:relative;display:block;margin-top:8px}.dwrap[hidden]{display:none}.dwrap input{color:transparent}.dwrap input::-webkit-datetime-edit{color:transparent}.dshow{position:absolute;left:11px;top:0;bottom:0;display:flex;align-items:center;pointer-events:none;color:var(--ink)}
 .money{position:relative}.money input{padding-left:38px}.money::before{content:"Rp";position:absolute;left:11px;bottom:11px;color:var(--mt);font-size:.85rem}
 button{font:inherit;font-weight:600;cursor:pointer;border-radius:9px;border:1px solid var(--ln);background:var(--sf2);color:var(--ink);padding:9px 14px}
 button.pri{background:var(--reg);border-color:var(--reg);color:#04201d;font-weight:800;padding:12px}
@@ -78,7 +79,6 @@ form #save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-
 .pchips button{border-color:var(--ln);color:var(--ink)}.pchips button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .sw1{width:100%;margin-top:8px;padding:8px 10px;font-size:.85rem}.sw1.neg{background:var(--bad);border-color:var(--bad);color:#fff}
 .sw{display:flex;gap:0;margin-top:8px}.sw button{flex:1;border-radius:0;padding:6px 10px;font-size:.85rem}.sw button:first-child{border-radius:9px 0 0 9px}.sw button:last-child{border-radius:0 9px 9px 0;border-left:0}.sw button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.chips button.neg{border-color:var(--bad);color:var(--bad)}
-.ch svg{width:100%;height:auto;display:block}.ch .hit{fill:transparent;cursor:pointer}.ctip{min-height:1.5em;font-size:.85rem;color:var(--mt);margin-top:4px}.ch h3{margin:12px 0 4px}.ch h3:first-child{margin-top:0}
 .pnav{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.pnav button:disabled{opacity:.35}
 #eff .cmp{margin-bottom:14px}
 .cf{position:fixed;top:-14px;width:8px;height:12px;z-index:99;pointer-events:none;animation:cf 1.6s ease-in forwards}
@@ -99,13 +99,12 @@ form #save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-
 <div class="card" id="per"></div>
 <section class="card hero" id="hero"></section>
 <div id="eff"></div>
-<div id="charts"></div>
 
 <div class="layout">
 <aside>
 <form id="f" class="card" autocomplete="off">
   <h2 class="full" id="ftitle">Catatan hari ini</h2>
-  <div class="full"><label>Tanggal</label><div class="chips pchips" id="dchips" style="margin-top:6px"><button type="button" data-dd="0">Hari ini</button><button type="button" data-dd="1">Kemarin</button><button type="button" data-dd="2">2 hari lalu</button><button type="button" data-dd="x">Tanggal lain</button></div><input type="date" id="date" required hidden style="margin-top:8px"><div class="hint" id="dtxt" style="margin-top:6px"></div></div>
+  <div class="full"><label>Tanggal</label><div class="chips pchips" id="dchips" style="margin-top:6px"><button type="button" data-dd="0">Hari ini</button><button type="button" data-dd="1">Kemarin</button><button type="button" data-dd="2">2 hari lalu</button><button type="button" data-dd="x">Tanggal lain</button></div><span class="dwrap" id="dwrap"><input type="date" id="date" required hidden><span class="dshow" id="dshow"></span></span><div class="hint" id="dtxt" style="margin-top:6px"></div><button type="button" id="off" style="margin-top:8px;width:100%">Tandai tanggal ini libur</button></div>
   <label class="full">Skema<select id="scheme"><option>Hub</option><option>Reguler</option></select></label>
   <label>Jam online<input type="number" id="hours" step="0.25" min="0.25" placeholder="9.25" required></label>
   <label>Jumlah order<input type="number" id="orders" min="0" placeholder="14" required></label>
@@ -184,11 +183,17 @@ $("f").addEventListener("submit",ev=>{
   try{localStorage.setItem(RP,e.rpkm)}catch(x){}
   const was=editing;save();resetForm();render();say(was?"Perubahan disimpan.":"Catatan tersimpan.");was?toast("Perubahan disimpan"):(confetti(),toast("Catatan tersimpan"));
 });
-function resetForm(){try{localStorage.removeItem(DK)}catch(e){}["hours","orders","gross","bonus","tip","meal","other","km","fuel"].forEach(i=>$(i).value="");$("date").value=iso(new Date());dOther=false;syncDate();editing=null;$("ftitle").textContent="Catatan hari ini";$("save").textContent="Simpan catatan";$("cancel").hidden=true}
+function resetForm(){try{localStorage.removeItem(DK)}catch(e){}["hours","orders","gross","bonus","tip","meal","other","km","fuel"].forEach(i=>$(i).value="");$("date").value=iso(new Date());dOther=false;syncDate();editing=null;$("ftitle").textContent="Catatan hari ini";$("save").textContent="Simpan catatan";$("cancel").hidden=true;$("off").hidden=false}
 $("cancel").onclick=()=>{resetForm();say("")};
+$("off").onclick=()=>{const v=$("date").value;if(!v){say("Pilih tanggal dulu.");return}
+  const ex=data.filter(e=>e.date===v&&e.libur);
+  if(ex.length){ex.forEach(e=>tomb[e.id]=Date.now());data=data.filter(e=>!(e.date===v&&e.libur));save();render();syncDate();say("Tanda libur "+dlabel(v)+" dibatalkan.");toast("Libur dibatalkan");return}
+  if(data.some(e=>e.date===v&&!e.libur)&&!confirm("Tanggal itu sudah ada catatan kerja. Tetap tandai libur?"))return;
+  data=[...data,{id:Date.now(),u:Date.now(),date:v,libur:true,scheme:"Libur",hours:0,orders:0,gross:0,tip:0,meal:0,other:0,bonus:0,km:0,rpkm:0,fuel:null}];
+  save();render();syncDate();say(dlabel(v)+" ditandai libur.");toast("Libur ditandai")};
 function edit(id){const e=data.find(x=>x.id===id);if(!e)return;editing=id;
   $("date").value=e.date;dOther=false;syncDate();$("scheme").value=e.scheme;$("hours").value=e.hours;$("orders").value=e.orders;$("gross").value=fmt(e.gross);$("tip").value=fmt(e.tip);$("meal").value=fmt(e.meal);$("other").value=fmt(e.other);$("bonus").value=fmt(e.bonus);$("km").value=e.km||"";$("rpkm").value=fmt(e.rpkm);$("fuel").value=e.fuel==null?"":fmt(e.fuel);
-  $("ftitle").textContent="Ubah catatan";$("save").textContent="Simpan perubahan";$("cancel").hidden=false;$("f").scrollIntoView({behavior:"smooth"})}
+  $("ftitle").textContent="Ubah catatan";$("save").textContent="Simpan perubahan";$("cancel").hidden=false;$("off").hidden=true;$("f").scrollIntoView({behavior:"smooth"})}
 
 function card(name,c,s){
   if(!s)return `<div class="card" style="--c:${c}"><h3>${name}</h3><div class="empty">Belum ada catatan.</div></div>`;
@@ -212,7 +217,7 @@ function rng(){const t=new Date();let a,b,l;
   return[iso(a),iso(b),l]}
 $("per").addEventListener("click",ev=>{const d=ev.target.dataset;if(d.pm){pm=d.pm;po=0}else if(d.po)po+=+d.po;else return;render()});
 function render(){
-  const [f,t,L]=rng(),pd=data.filter(e=>e.date>=f&&e.date<=t),W=stats(pd);
+  const [f,t,L]=rng(),all=data.filter(e=>e.date>=f&&e.date<=t),pd=all.filter(e=>!e.libur),lib=all.filter(e=>e.libur),W=stats(pd);
   const wh=sum(pd.filter(e=>e.scheme==="Hub"),net),wr=sum(pd.filter(e=>e.scheme==="Reguler"),net),wt=Math.max(wh+wr,1);
   const H=sum(pd,e=>e.hours),O=sum(pd,e=>e.orders),K=sum(pd,e=>e.km||0),N=sum(pd,net),F=sum(pd,fuelOf),M=sum(pd,e=>e.meal||0),X=sum(pd,e=>e.other||0),ti=sum(pd,e=>e.gross+(e.tip||0)+(e.bonus||0));
   const R=(a,b)=>`<div class="row"><span>${a}</span><span>${b}</span></div>`;
@@ -220,10 +225,9 @@ function render(){
   $("hero").innerHTML=`<div class="sub">${L}, bersih setelah bensin dan pengeluaran</div><div class="num">${rp(N)}</div>
   <div class="seg"><i style="width:${wh/wt*100}%;background:var(--hub)"></i><i style="width:${wr/wt*100}%;background:var(--reg)"></i></div>
   <div class="legend"><span style="--c:var(--hub)">Hub ${rp(wh)}</span><span style="--c:var(--reg)">Reguler ${rp(wr)}</span></div>
-  <div class="stats"><span><b>${pd.length}</b> hari kerja</span>${(m=>m?`<span><b>${m}</b> hari tanpa catatan</span>`:"")(missing(pd,f,t))}<span><b>${O}</b> order</span><span><b>${H.toFixed(1)}</b> jam online</span><span><b>${rp(ti)}</b> pendapatan</span><span><b>${rp(W?W.tip:0)}</b> tip</span></div>`;
+  <div class="stats"><span><b>${pd.length}</b> hari kerja</span>${(lib.length?`<span><b>${lib.length}</b> libur</span>`:"")+(m=>m?`<span><b>${m}</b> hari tanpa catatan</span>`:"")(missing(all,f,t))}<span><b>${O}</b> order</span><span><b>${H.toFixed(1)}</b> jam online</span><span><b>${rp(ti)}</b> pendapatan</span><span><b>${rp(W?W.tip:0)}</b> tip</span></div>`;
   $("eff").innerHTML=pd.length?`<div class="cmp"><div class="card" style="--c:var(--reg)"><h3>Efisiensi</h3>${R("Bersih per jam online",H?rp(N/H):"-")}${R("Bersih per order",O?rp(N/O):"-")}${R("Bersih per km",K?rp(N/K):"-")}${R("Order per jam",H?(O/H).toFixed(1):"-")}</div><div class="card" style="--c:var(--hub)"><h3>Pengeluaran</h3>${R("Bensin",rp(F))}${R("Makan dan minum",rp(M))}${R("Lainnya",rp(X))}${R("Total jarak",K?K.toFixed(1)+" km":"-")}</div></div>`:"";
   const hub=stats(pd.filter(e=>e.scheme==="Hub")),reg=stats(pd.filter(e=>e.scheme==="Reguler"));
-  charts(pd,f,t);
   $("cmp").innerHTML=`<div class="cmp">${card("Hub","var(--hub)",hub)}${card("Reguler","var(--reg)",reg)}</div>`;
   if(hub&&reg){const w=hub.perHour>reg.perHour?"Hub":"Reguler",a=Math.max(hub.perHour,reg.perHour),b=Math.min(hub.perHour,reg.perHour);
     $("verdict").innerHTML=`<div class="verdict"><b>${w}</b> lebih unggul ${b>0?Math.round((a-b)/b*100):0}% per jam online. ${hub.d<3||reg.d<3?"Datanya masih sedikit (kurang dari 3 hari per skema), jadi belum bisa jadi patokan.":"Cek juga tabel per hari agar perbandingannya adil di hari yang sama."}</div>`}
@@ -245,11 +249,11 @@ let tT;function toast(m){let t=$("toast");if(!t){t=document.createElement("div")
 $("log").addEventListener("click",ev=>{const d=ev.target.dataset;
   if(d.bonus){const e=data.find(x=>String(x.id)===d.bonus);if(!e)return;const r=prompt("Bonus insentif untuk "+dlabel(e.date)+" (Rp, angka saja):",e.bonus||"");if(r===null)return;const v=+String(r).replace(/\D/g,"")||0;data=data.map(x=>x.id===e.id?{...x,bonus:v,u:Date.now()}:x);save();render();say("Bonus disimpan.");toast("Bonus disimpan");return}
   if(d.edit)edit(+d.edit);
-  if(d.del&&confirm("Hapus catatan ini?")){tomb[d.del]=Date.now();data=data.filter(e=>String(e.id)!==d.del);save();render();say("Catatan dihapus.");toast("Catatan dihapus")}});
+  if(d.del&&confirm(((data.find(x=>String(x.id)===d.del)||{}).libur?"Hapus tanda libur ini?":"Hapus catatan ini?"))){tomb[d.del]=Date.now();data=data.filter(e=>String(e.id)!==d.del);save();render();say("Catatan dihapus.");toast("Catatan dihapus")}});
 async function copy(t,ok){try{await navigator.clipboard.writeText(t);say(ok)}catch(e){window.prompt("Salin teks ini:",t)}}
 $("csv").onclick=()=>{const c=x=>String(x).replace(".",","),H="tanggal;skema;jam_online;order;argo;bonus;tip;makan;lain;km;bensin;bersih",
-  rows=[...data].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.scheme,c(e.hours),e.orders,e.gross,e.bonus||0,e.tip||0,e.meal||0,e.other||0,c(e.km||0),Math.round(fuelOf(e)),Math.round(net(e))].join(";"));
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+[H,...rows].join("\r\n")],{type:"text/csv;charset=utf-8"}));a.download="catatan-narik-"+iso(new Date())+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);say("CSV diunduh ("+rows.length+" catatan).");toast("CSV diunduh")};
+  rows=[...data].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date.split("-").reverse().join("/"),e.scheme,c(e.hours),e.orders,e.gross,e.bonus||0,e.tip||0,e.meal||0,e.other||0,c(e.km||0),Math.round(fuelOf(e)),Math.round(net(e))].join(";"));
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+[H,...rows].join("\r\n")],{type:"text/csv;charset=utf-8"}));a.download="catatan-narik-"+iso(new Date()).split("-").reverse().join("-")+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);say("CSV diunduh ("+rows.length+" catatan).");toast("CSV diunduh")};
 $("bak").onclick=()=>copy(JSON.stringify(data),"Cadangan disalin. Simpan di catatan HP atau laptop.");
 $("res").onclick=()=>{const t=prompt("Tempel teks cadangan:");if(!t)return;try{const d=JSON.parse(t);if(!Array.isArray(d))throw 0;d.forEach(x=>x.u=Date.now());const ids=new Set(d.map(x=>x.id));data=[...data.filter(x=>!ids.has(x.id)),...d];save();render();say("Data dipulihkan dan digabung dengan catatan yang sudah ada.")}catch(e){say("Teks cadangan tidak valid.")}};
 $("wipe").onclick=()=>{if(!confirm("Hapus SEMUA catatan? Ini tidak bisa dibatalkan. Salin cadangan dulu kalau masih perlu."))return;data.forEach(e=>tomb[e.id]=Date.now());data=[];save();resetForm();render();say("Semua catatan dihapus.");toast("Semua catatan dihapus")};
@@ -309,45 +313,17 @@ setInterval(()=>{if(!document.hidden)sync()},60000);
   lab();sw.onclick=()=>{neg=!neg;lab()};
   box.addEventListener("click",ev=>{const b=ev.target.closest("[data-"+g+"]");if(!b||!neg||!+b.dataset[g])return;ev.stopPropagation();const v=Math.max(0,num(g)-(+b.dataset[g]));$(g).value=v?fmt(v):"";saveDraft()},true)});
 
-function buckets(pd,f,t){const B=[];
-  if(pm==="year"||pm==="all"){let a,z;if(pm==="year"){a=+f.slice(0,4)*12;z=a+11}else{const d=pd.map(e=>e.date).sort();if(!d.length)return B;a=+d[0].slice(0,4)*12+ +d[0].slice(5,7)-1;z=+d[d.length-1].slice(0,4)*12+ +d[d.length-1].slice(5,7)-1}
-    for(let i=a;i<=z;i++){const y=Math.floor(i/12),m=i%12,k=y+"-"+pad(m+1);B.push({fut:k>iso(new Date()).slice(0,7),lb:pm==="all"?MON[m]+" "+String(y).slice(2):MON[m],tt:MON[m]+" "+y,l:pd.filter(e=>e.date.startsWith(k))})}}
-  else for(const d=new Date(f+"T00:00"),b=new Date(t+"T00:00");d<=b;d.setDate(d.getDate()+1)){const k=iso(d);B.push({fut:k>iso(new Date()),lb:pm==="week"?DAYS[d.getDay()]:String(d.getDate()),tt:dlabel(k),l:pd.filter(e=>e.date===k)})}
-  return B}
-function rb(n){const a=Math.abs(n),g=n<0?"-":"";return a>=1e6?g+(a/1e6).toFixed(1).replace(".",",")+" jt":g+Math.round(a/1000)+" rb"}
-function axis(lo,hi){const r=Math.max(hi-lo,1),p=Math.pow(10,Math.floor(Math.log10(r/3))),q=r/3/p,st=(q<1.5?1:q<3?2:q<7?5:10)*p;return{st,bot:Math.floor(lo/st)*st,top:Math.ceil(hi/st)*st}}
-function missing(pd,f,t){if(pm==="day"||!pd.length)return 0;const y=iso(new Date(Date.now()-864e5)),a=pm==="all"?pd.map(e=>e.date).sort()[0]:f,b=t<y?t:y;if(a>b)return 0;const have=new Set(pd.map(e=>e.date));let n=0;for(const d=new Date(a+"T00:00"),z=new Date(b+"T00:00");d<=z;d.setDate(d.getDate()+1))if(!have.has(iso(d)))n++;return n}
-function charts(pd,f,t){const el=$("charts");if(pm==="day"||!pd.length){el.innerHTML="";return}
-  const B=buckets(pd,f,t),n=B.length,W=480,H=200,L=46,R=6,T=18,Bm=24,ih=H-T-Bm,bw=(W-L-R)/n,st=Math.ceil(n/(pm==="all"?5:8)),xl=i=>L+bw*i+bw/2,
-  V=B.map(b=>{const h=sum(b.l.filter(e=>e.scheme==="Hub"),net),tot=sum(b.l,net),hr=sum(b.l,e=>e.hours);return{h,tot,hr,y:hr>0?tot/hr:null,has:b.l.length>0}}),D=V.filter(v=>v.has),
-  lab=i=>i%st===0?`<text x="${xl(i)}" y="${H-7}" text-anchor="middle" font-size="12" fill="var(--mt)">${B[i].lb}</text>`:"",
-  grid=(A,Y)=>{let g="";for(let v=A.bot;v<=A.top+A.st/2;v+=A.st){const y=Y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--ln)"${Math.abs(v)<1e-9?"":' stroke-dasharray="3 4"'}/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="12" fill="var(--mt)">${Math.abs(v)<1e-9?"0":rb(v)}</text>`}return g},
-  avgL=(Y,v,txt)=>`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--ink)" stroke-opacity=".55" stroke-width="1.5" stroke-dasharray="6 4"/><text x="${W-R}" y="${Y(v)-5}" text-anchor="end" font-size="12" fill="var(--mt)">${txt}</text>`,
-  dot=(i,Y)=>!B[i].fut&&!V[i].has?`<circle cx="${xl(i)}" cy="${Y(0)}" r="2.5" fill="var(--mt)" fill-opacity=".55"/>`:"",
-  ext=k=>{let a=-1,b=-1;V.forEach((v,i)=>{if(v[k]==null||!v.has)return;if(a<0||v[k]>V[a][k])a=i;if(b<0||v[k]<V[b][k])b=i});return i=>n<=10||i===a||i===b};
-  const A1=axis(Math.min(0,...V.map(v=>v.tot)),Math.max(1,...V.map(v=>v.tot))),Y1=v=>T+ih-(v-A1.bot)/(A1.top-A1.bot)*ih,show1=ext("tot"),y0=Y1(0);
-  let bars="",hits="";V.forEach((v,i)=>{const x=L+bw*i+bw*.15,w=bw*.7;
-    if(v.has){if(v.tot>=0){const hp=Math.min(Math.max(v.h,0),v.tot);bars+=`<rect x="${x}" y="${Y1(hp)}" width="${w}" height="${Math.max(0,y0-Y1(hp))}" fill="var(--hub)" rx="2"/><rect x="${x}" y="${Y1(v.tot)}" width="${w}" height="${Math.max(0,Y1(hp)-Y1(v.tot))}" fill="var(--reg)" rx="2"/>`}
-      else bars+=`<rect x="${x}" y="${y0}" width="${w}" height="${Y1(v.tot)-y0}" fill="var(--bad)" rx="2"/>`;
-      if(show1(i))bars+=`<text x="${xl(i)}" y="${v.tot>=0?Y1(v.tot)-4:Y1(v.tot)+13}" text-anchor="middle" font-size="12" font-weight="700" fill="${v.tot>=0?"var(--ink)":"var(--bad)"}">${rb(v.tot)}</text>`}
-    bars+=dot(i,Y1)+lab(i);hits+=`<rect class="hit" x="${L+bw*i}" y="0" width="${bw}" height="${H}" data-c="b" data-t="${B[i].tt}: ${v.has?rp(v.tot):"tidak ada catatan"}"/>`});
-  const avg=D.length?sum(D,v=>v.tot)/D.length:0;
-  const ys=D.filter(v=>v.y!=null).map(v=>v.y),A2=axis(Math.min(0,...ys),Math.max(1,...ys)),Y2=v=>T+ih-(v-A2.bot)/(A2.top-A2.bot)*ih,show2=ext("y"),th=sum(D,v=>v.hr),avgH=th?sum(D,v=>v.tot)/th:0;
-  let line="",dots="",lh="",prev=null;V.forEach((v,i)=>{if(v.y!=null){const x=xl(i),y=Y2(v.y);if(prev)line+=`<line x1="${prev.x}" y1="${prev.y}" x2="${x}" y2="${y}" stroke="var(--reg)" stroke-width="2.5"/>`;dots+=`<circle cx="${x}" cy="${y}" r="4" fill="var(--reg)"/>`+(show2(i)?`<text x="${x}" y="${y-8}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${rb(v.y)}</text>`:"");prev={x,y}}
-    else line+=dot(i,Y2);line+=lab(i);lh+=`<rect class="hit" x="${L+bw*i}" y="0" width="${bw}" height="${H}" data-c="l" data-t="${B[i].tt}: ${v.y!=null?rp(v.y)+" per jam online":"tidak ada catatan"}"/>`});
-  el.innerHTML=`<div class="card ch"><h3>Bersih per ${pm==="year"||pm==="all"?"bulan":"hari"} <small style="font-weight:400;color:var(--mt)">(<span style="color:var(--hub)">Hub</span>, <span style="color:var(--reg)">Reguler</span>, <span style="color:var(--bad)">rugi</span>)</small></h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafik batang bersih">${grid(A1,Y1)}${bars}${avgL(Y1,avg,"Rata-rata "+rp(avg))}${hits}</svg><div class="ctip" data-o="b">Ketuk batang untuk detail. Titik abu-abu = tidak ada catatan.</div>
-  <h3>Bersih per jam online</h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafik garis bersih per jam online">${grid(A2,Y2)}${line}${th?avgL(Y2,avgH,"Rata-rata "+rp(avgH)):""}${dots}${lh}</svg><div class="ctip" data-o="l">Ketuk titik untuk detail.</div></div>`}
-$("charts").addEventListener("click",ev=>{const h=ev.target.closest("[data-t]");if(!h)return;const o=$("charts").querySelector('.ctip[data-o="'+h.dataset.c+'"]');if(o)o.textContent=h.dataset.t});
-
+function missing(pd,f,t){if(pm==="day"||!data.length)return 0;const y=iso(new Date(Date.now()-864e5)),first=data.map(e=>e.date).sort()[0],a=f<first?first:f,b=t<y?t:y;if(a>b)return 0;const have=new Set(data.map(e=>e.date));let n=0;for(const d=new Date(a+"T00:00"),z=new Date(b+"T00:00");d<=z;d.setDate(d.getDate()+1))if(!have.has(iso(d)))n++;return n}
 let dOther=false;const DF=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
 function syncDate(){const v=$("date").value,hit=["0","1","2"].find(k=>{const d=new Date();d.setDate(d.getDate()-k);return iso(d)===v}),sel=(!hit||dOther)?"x":hit;
-  $("date").hidden=sel!=="x";document.querySelectorAll("#dchips [data-dd]").forEach(b=>b.classList.toggle("on",b.dataset.dd===sel));
-  const c=v?data.filter(e=>e.date===v&&e.id!==editing).length:0;
-  $("dtxt").textContent=v?DF[dow(v)]+", "+(+v.slice(8))+" "+MON[+v.slice(5,7)-1]+" "+v.slice(0,4)+(c?" \u00b7 sudah ada "+c+" catatan":""):"Pilih tanggal"}
+  $("date").hidden=sel!=="x";$("dwrap").hidden=$("date").hidden;$("dshow").textContent=v?v.slice(8)+"/"+v.slice(5,7)+"/"+v.slice(0,4):"dd/mm/yyyy";document.querySelectorAll("#dchips [data-dd]").forEach(b=>b.classList.toggle("on",b.dataset.dd===sel));
+  const c=v?data.filter(e=>e.date===v&&e.id!==editing&&!e.libur).length:0,lb=!!v&&data.some(e=>e.date===v&&e.libur);$("off").textContent=lb?"Batalkan libur tanggal ini":"Tandai tanggal ini libur";
+  $("dtxt").textContent=v?DF[dow(v)]+", "+(+v.slice(8))+" "+MON[+v.slice(5,7)-1]+" "+v.slice(0,4)+(lb?" \u00b7 ditandai libur":"")+(c?" \u00b7 sudah ada "+c+" catatan":""):"Pilih tanggal"}
 $("dchips").addEventListener("click",ev=>{const b=ev.target.closest("[data-dd]");if(!b)return;const k=b.dataset.dd;
   if(k==="x"){dOther=true;$("date").hidden=false;try{$("date").showPicker&&$("date").showPicker()}catch(e){}}
   else{dOther=false;const d=new Date();d.setDate(d.getDate()-k);$("date").value=iso(d)}saveDraft();syncDate()});
 ["input","change"].forEach(n=>$("date").addEventListener(n,syncDate));
+$("date").addEventListener("click",()=>{try{$("date").showPicker&&$("date").showPicker()}catch(e){}});
 syncDate();
 
 render();
